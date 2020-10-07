@@ -10,6 +10,9 @@ adminUser=$1
 
 WD=/home/$adminUser/
 
+# Sleep to let Ubuntu install security updates and other updates
+sleep 3m
+
 echo WD is $WD
 
 if [ ! -d $WD ]; then
@@ -20,17 +23,18 @@ else
     echo "Working in $(pwd)" > install-log.txt
 fi
 
-# Sleep to let Ubuntu install security updates and other updates
-sleep 3m
-
 # Set so we can write to log
 sudo chmod ugo+rw install-log.txt
 
 echo "Installing CUDA and drivers..." >> install-log.txt
 
+# Fix gcc for CUDA install (cuda needs gcc-6)
+sudo apt -y install gcc-6 g++-6
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 50
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 50
+
 # CUDA 11.0 install
 sudo wget https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run &>> install-log.txt
-sudo apt install gcc # ensure we have gcc
 sudo sh cuda_11.0.3_450.51.06_linux.run --silent --driver --toolkit --samples &>> install-log.txt
 
 echo "Installing OpenCV..." >> install-log.txt
