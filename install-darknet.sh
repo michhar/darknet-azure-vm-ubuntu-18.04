@@ -28,22 +28,16 @@ sudo chmod ugo+rw install-log.txt
 
 echo "Installing CUDA and drivers..." >> install-log.txt
 
-# Ensure correct gcc for CUDA install (cuda needs gcc-6)
-# https://askubuntu.com/a/1044850
-sudo apt -y install gcc-6 g++-6
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 50
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 50
-
 # CUDA 11.0 install
 # https://www.howtoforge.com/tutorial/how-to-install-nvidia-cuda-on-ubuntu-1804/
-sudo wget https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run &>> install-log.txt
+sudo wget https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run 2>> install-log.txt
 sudo chmod +x cuda_11.0.3_450.51.06_linux.run
-sudo ./cuda_11.0.3_450.51.06_linux.run --silent --driver --toolkit --samples &>> install-log.txt
+sudo ./cuda_11.0.3_450.51.06_linux.run --silent --driver --toolkit --samples 2>> install-log.txt
 
 echo "Installing OpenCV..." >> install-log.txt
 
 # Install OpenCV
-sudo apt -y update && sudo apt -y install libopencv-dev python3-opencv &>> install-log.txt
+sudo apt -y update && sudo apt -y install libopencv-dev python3-opencv 2>> install-log.txt
 
 # Clone darknet
 cd $WD
@@ -75,7 +69,7 @@ export LD_LIBRARY_PATH=/usr/local/cuda-11.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRAR
 echo "Building darknet..." >> install-log.txt
 
 # Build darknet
-sudo make &>> install-log.txt
+sudo make 2>> install-log.txt
 
 # Change permissions to all darknet resources
 cd $WD
