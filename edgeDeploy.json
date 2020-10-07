@@ -111,7 +111,6 @@
         }]
       }
     },
-    "dcs": "[parameters('deviceConnectionString')]",
     "networkSecurityGroupName": "[concat('nsg-', uniquestring(parameters('dnsLabelPrefix')))]",
     "scriptUri": "https://raw.githubusercontent.com/michhar/darknet-azure-vm-ubuntu-18.04/master/install-darknet.sh"
   },
