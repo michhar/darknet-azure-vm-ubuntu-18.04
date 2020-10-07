@@ -1,0 +1,230 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dnsLabelPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_NC6",
+      "allowedValues": [
+        "Standard_NC6",
+        "Standard_NC12",
+        "Standard_NC24",
+        "Standard_NC24r",
+        "Standard_NC6_Promo",
+        "Standard_NC12_Promo",
+        "Standard_NC24_Promo",
+        "Standard_NC24r_Promo",
+        "Standard_NC6s_v2",
+        "Standard_NC12s_v2",
+        "Standard_NC24rs_v2",
+        "Standard_NC24s_v2",
+        "Standard_NC6s_v3",
+        "Standard_NC12s_v3",
+        "Standard_NC24rs_v3",
+        "Standard_NC24s_v3",
+        "Standard_NC4as_T4_v3",
+        "Standard_NC8as_T4_v3",
+        "Standard_NC16as_T4_v3",
+        "Standard_NC64as_T4_v3"
+      ],
+      "metadata": {
+        "description": "VM size"
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "defaultValue": "edgevm",
+      "metadata": {
+        "description": "VM name"
+      }
+    },
+    "ubuntuOSVersion": {
+      "type": "string",
+      "defaultValue": "18.04-LTS",
+      "metadata": {
+        "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "allowedValues": [
+        "eastus",
+        "canadacentral",
+        "southcentralus",
+        "westus2"
+        ],
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "authenticationType": {
+      "type": "string",
+      "defaultValue": "password",
+      "allowedValues": [
+        "sshPublicKey",
+        "password"
+      ],
+      "metadata": {
+        "description": "Type of authentication to use on the Virtual Machine."
+      }
+    },
+    "adminPasswordOrKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SSH Key or password for the Virtual Machine."
+      }
+    }
+  },
+  "variables": {
+    "imagePublisher": "Canonical",
+    "imageOffer": "UbuntuServer",
+    "nicName": "[concat('nic-', uniquestring(parameters('dnsLabelPrefix')))]",
+    "virtualNetworkName": "[concat('vnet-', uniquestring(parameters('dnsLabelPrefix')))]",
+    "publicIPAddressName": "[concat('ip-', parameters('dnsLabelPrefix'))]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnet1Name": "[concat('subnet-', uniquestring(parameters('dnsLabelPrefix')))]",
+    "subnet1Prefix": "10.0.0.0/24",
+    "publicIPAddressType": "Dynamic",
+    "storageAccountType": "Standard_LRS",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/',variables('subnet1Name'))]",
+    "apiVersion": "2015-06-15",
+    "linuxConfiguration": {
+      "disablePasswordAuthentication": true,
+      "ssh": {
+        "publicKeys": [{
+          "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+          "keyData": "[parameters('adminPasswordOrKey')]"
+        }]
+      }
+    },
+    "dcs": "[parameters('deviceConnectionString')]",
+    "networkSecurityGroupName": "[concat('nsg-', uniquestring(parameters('dnsLabelPrefix')))]",
+    "scriptUri": "https://raw.githubusercontent.com/michhar/darknet-azure-vm-ubuntu-18.04/master/install-darknet.sh"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+        }
+      }
+    },
+    {
+      "comments": "Default Network Security Group for template",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2019-08-01",
+      "name": "[variables('networkSecurityGroupName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [{
+          "name": "default-allow-22",
+          "properties": {
+            "priority": 1000,
+            "access": "Allow",
+            "direction": "Inbound",
+            "destinationPortRange": "22",
+            "protocol": "Tcp",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*"
+          }
+        }]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+      ],
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [{
+          "name": "[variables('subnet1Name')]",
+          "properties": {
+            "addressPrefix": "[variables('subnet1Prefix')]",
+            "networkSecurityGroup": {
+              "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+            }
+          }
+        }]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [{
+          "name": "ipconfig1",
+          "properties": {
+            "privateIPAllocationMethod": "Dynamic",
+            "publicIPAddress": {
+              "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+            },
+            "subnet": {
+              "id": "[variables('subnet1Ref')]"
+            }
+          }
+        }]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),'/installcustomscript')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[variables('scriptUri')]"
+          ],
+          "commandToExecute": "[concat('./install-darknet.sh ', parameters('adminUsername'))]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "Public SSH": {
+      "type": "string",
+      "value": "[concat('ssh ', reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))).osProfile.adminUsername, '@', reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).dnsSettings.fqdn)]"
+    }
+  }
+}
