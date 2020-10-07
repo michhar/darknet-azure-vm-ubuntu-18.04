@@ -23,8 +23,14 @@ fi
 # Sleep to let Ubuntu install security updates and other updates
 sleep 3m
 
+# Set so we can write to log
+sudo chmod ugo+rw install-log.txt
+
+echo "Installing CUDA and drivers..." >> install-log.txt
+
 # CUDA 11.0 install
 sudo wget https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run &>> install-log.txt
+sudo apt install gcc # ensure we have gcc
 sudo sh cuda_11.0.3_450.51.06_linux.run --silent --driver --toolkit --samples &>> install-log.txt
 
 echo "Installing OpenCV..." >> install-log.txt
