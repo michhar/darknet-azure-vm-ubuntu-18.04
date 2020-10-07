@@ -11,7 +11,7 @@ adminUser=$1
 WD=/home/$adminUser/
 
 # Sleep to let Ubuntu install security updates and other updates
-sleep 3m
+sleep 1m
 
 echo WD is $WD
 
@@ -30,7 +30,7 @@ echo "Installing CUDA and drivers..." >> install-log.txt
 
 # CUDA 11.0 install
 # https://www.howtoforge.com/tutorial/how-to-install-nvidia-cuda-on-ubuntu-1804/
-sudo wget https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run 2>> install-log.txt
+sudo wget https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run
 sudo chmod +x cuda_11.0.3_450.51.06_linux.run
 sudo ./cuda_11.0.3_450.51.06_linux.run --silent --driver --toolkit --samples 2>> install-log.txt
 
