@@ -26,7 +26,7 @@ fi
 # Set permissions so we can write to log
 sudo chmod ugo+rw install-log.txt
 
-if [ ! -d $WD ]; then
+if [ ! -d /usr/local/cuda ]; then
     echo "Installing CUDA and drivers..." >> install-log.txt
     # CUDA 11.0 install
     # https://www.howtoforge.com/tutorial/how-to-install-nvidia-cuda-on-ubuntu-1804/
@@ -37,10 +37,10 @@ else
     echo "CUDA installed already" >> install-log.txt
 fi
 
-# # cuDNN 7 install
-# sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda_learn.list'
-# sudo apt-key adv --fetch-keys  http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
-# sudo apt update && sudo apt install libcudnn7
+# cuDNN 7 install
+sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda_learn.list'
+sudo apt-key adv --fetch-keys  http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+sudo apt update && sudo apt install libcudnn7
 
 echo "Installing OpenCV..." >> install-log.txt
 
