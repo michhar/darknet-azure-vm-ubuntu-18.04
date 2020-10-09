@@ -44,7 +44,7 @@ sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/
 sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda_learn.list'
 sudo apt update
 sudo apt install -y -q cuda-drivers cuda-demo-suite-11-0 cuda-runtime-11-0 cuda-11-0
-sudo apt install -y -q libcudnn7
+sudo apt install -y -q libcudnn7 libcudnn7-dev
 
 echo "Installing OpenCV..." >> install-log.txt
 
@@ -58,8 +58,8 @@ cd darknet/
 
 # Update variables to enable GPU acceleration for build
 sed -i "s/GPU=0/GPU=1/g" Makefile
-# sed -i "s/CUDNN=0/CUDNN=1/g" Makefile
-# sed -i "s/CUDNN_HALF=0/CUDNN_HALF=1/g" Makefile
+sed -i "s/CUDNN=0/CUDNN=1/g" Makefile
+sed -i "s/CUDNN_HALF=0/CUDNN_HALF=1/g" Makefile
 sed -i "s/OPENCV=0/OPENCV=1/g" Makefile
 sed -i "s/AVX=0/AVX=1/g" Makefile
 sed -i "s/OPENMP=0/OPENMP=1/g" Makefile
