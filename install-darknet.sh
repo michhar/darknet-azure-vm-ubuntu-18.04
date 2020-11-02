@@ -45,6 +45,17 @@ sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/machine-lea
 sudo apt update
 sudo apt install -y -q cuda-drivers cuda-demo-suite-11-0 cuda-runtime-11-0 cuda-11-0
 sudo apt install -y -q libcudnn7 libcudnn7-dev
+sudo apt install -y unzip zip
+
+# Install VOTT labeling tool
+wget https://github.com/microsoft/VoTT/releases/download/v2.2.0/vott-2.2.0-linux.snap
+sudo apt install -y snap
+sudo snap install --dangerous vott-2.2.0-linux.snap
+
+# For X2Go (remote desktop server-side packages)
+sudo apt-add-repository -y ppa:x2go/stable
+sudo apt update
+sudo apt install -y x2goserver x2goserver-xsession x2golxdebindings x2gomatebindings xfce4
 
 echo "Installing OpenCV..." >> install-log.txt
 
@@ -87,5 +98,19 @@ sudo make 2>> install-log.txt
 cd $WD
 sudo chmod -R ugo+rw darknet/
 
-echo "Done building darknet!" >> install-log.txt
+# Install and set up Python
+sudo apt install -y python3-pip python3-dev libglib2.0-0 libsm6 libxext6 libxrender-dev
+cd /usr/local/bin
+ln -s /usr/bin/python3 python
+pip3 install --upgrade pip
 
+# Git clone TensorFlow Lite darknet conversion project
+cd $WD
+git clone https://github.com/hunglc007/tensorflow-yolov4-tflite.git
+cd tensorflow-yolov4-tflite
+python3 -m venv env
+source env/bin/activate
+pip3 install -r requirements.txt
+
+
+echo "Done building darknet!" >> install-log.txt
