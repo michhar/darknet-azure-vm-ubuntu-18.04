@@ -99,7 +99,7 @@ cd $WD
 sudo chmod -R ugo+rw darknet/
 
 # Install and set up Python
-sudo apt install -y python3-pip python3-dev libglib2.0-0 libsm6 libxext6 libxrender-dev
+sudo apt install -y python3-pip python3-dev python3-venv libglib2.0-0 libsm6 libxext6 libxrender-dev
 cd /usr/local/bin
 ln -s /usr/bin/python3 python
 pip3 install --upgrade pip
@@ -107,10 +107,17 @@ pip3 install --upgrade pip
 # Git clone TensorFlow Lite darknet conversion project
 cd $WD
 git clone https://github.com/hunglc007/tensorflow-yolov4-tflite.git
+chmod -R ugo+rw tensorflow-yolov4-tflite
 cd tensorflow-yolov4-tflite
+# Check out specific commit to pin the repo - may update as needed in future
+git checkout 9f16748
+# Create a python environment
 python3 -m venv env
 source env/bin/activate
-pip3 install -r requirements.txt
+pip install --upgrade pip
+pip install --upgrade setuptools
+# Install gpu package version of tensorflow because on NC series VMs
+sed -i "s/2.3.0rc0/2.0.0b1/g" requirements-gpu.txt
+pip install -r requirements-gpu.txt
 
-
-echo "Done building darknet!" >> install-log.txt
+echo "Done building darknet and installing projects!" >> install-log.txt
