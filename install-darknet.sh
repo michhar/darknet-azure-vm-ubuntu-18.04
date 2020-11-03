@@ -120,4 +120,9 @@ pip install --upgrade setuptools
 sed -i "s/2.3.0rc0/2.0.0b1/g" requirements-gpu.txt
 pip install -r requirements-gpu.txt
 
+# Change owner and group of folders so can access with VoTT
+cd $WD
+sudo chown -R $adminUser:$adminUser darknet
+sudo chown -R $adminUser:$adminUser tensorflow-yolov4-tflite
+
 echo "Done building darknet and installing projects!" >> install-log.txt
