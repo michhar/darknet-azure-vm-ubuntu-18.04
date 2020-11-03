@@ -38,13 +38,24 @@ sudo apt remove -y --autoremove nvidia-*
 sudo apt update
 sudo add-apt-repository -y ppa:graphics-drivers/ppa
 sudo apt update
-#sudo apt install -y -q cuda-drivers-455
-sudo apt-key adv --fetch-keys  http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
-sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list'
-sudo bash -c 'echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda_learn.list'
+
+# Guide: https://www.tensorflow.org/install/gpu 
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.1.243-1_amd64.deb
+sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+sudo dpkg -i cuda-repo-ubuntu1804_10.1.243-1_amd64.deb
+sudo apt-get update
+wget http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/nvidia-machine-learning-repo-ubuntu1804_1.0.0-1_amd64.deb
+sudo apt install -y ./nvidia-machine-learning-repo-ubuntu1804_1.0.0-1_amd64.deb
 sudo apt update
-sudo apt install -y -q cuda-drivers cuda-demo-suite-11-0 cuda-runtime-11-0 cuda-11-0
-sudo apt install -y -q libcudnn7 libcudnn7-dev
+# Install NVIDIA driver
+sudo apt install -y --no-install-recommends nvidia-driver-455
+# Reboot. Check that GPUs are visible using the command: nvidia-smi
+# Install development and runtime libraries (~4GB)
+sudo apt-get install -y --no-install-recommends \
+    cuda-10-1 \
+    libcudnn7=7.6.5.32-1+cuda10.1  \
+    libcudnn7-dev=7.6.5.32-1+cuda10.1
+
 sudo apt install -y unzip zip
 
 # Install VOTT labeling tool
@@ -86,8 +97,8 @@ sed -i "s/NVCC=nvcc/NVCC=\/usr\/local\/cuda\/bin\/nvcc/g" Makefile
 # Change permissions on shell scripts
 sudo chmod ugo+x *.sh
 
-export PATH=/usr/local/cuda-11.0/bin${PATH:+:${PATH}}
-export LD_LIBRARY_PATH=/usr/local/cuda-11.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 
 echo "Building darknet..." >> install-log.txt
 
@@ -117,12 +128,15 @@ source env/bin/activate
 pip install --upgrade pip
 pip install --upgrade setuptools
 # Install gpu package version of tensorflow because on NC series VMs
-sed -i "s/2.3.0rc0/2.0.0b1/g" requirements-gpu.txt
-pip install -r requirements-gpu.txt
+sed -i "s/2.3.0rc0/2.3.1/g" requirements.txt
+pip install -r requirements.txt
 
 # Change owner and group of folders so can access with VoTT
 cd $WD
 sudo chown -R $adminUser:$adminUser darknet
 sudo chown -R $adminUser:$adminUser tensorflow-yolov4-tflite
+
+# Install firefox
+sudo apt upgrade && sudo apt install -y firefox
 
 echo "Done building darknet and installing projects!" >> install-log.txt
