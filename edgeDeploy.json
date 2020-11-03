@@ -61,9 +61,10 @@
       "type": "string",
       "defaultValue": "eastus",
       "allowedValues": [
-        "eastus",
         "canadacentral",
+        "eastus",
         "southcentralus",
+        "westeurope",
         "westus2"
         ],
       "metadata": {
