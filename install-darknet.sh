@@ -40,9 +40,9 @@ sudo add-apt-repository -y ppa:graphics-drivers/ppa
 sudo apt update
 
 # Guide: https://www.tensorflow.org/install/gpu 
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.1.243-1_amd64.deb
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
 sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
-sudo dpkg -i cuda-repo-ubuntu1804_10.1.243-1_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
 sudo apt-get update
 wget http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/nvidia-machine-learning-repo-ubuntu1804_1.0.0-1_amd64.deb
 sudo apt install -y ./nvidia-machine-learning-repo-ubuntu1804_1.0.0-1_amd64.deb
@@ -63,10 +63,11 @@ sudo apt-get install -y --no-install-recommends \
  echo "export LD_LIBRARY_PATH=/usr/local/cuda-10.2/lib64:${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" >> ~/.bashrc
  echo "export PATH=/usr/local/cuda-10.2/bin${PATH:+:${PATH}}" >> ~/.bashrc
  source ~/.bashrc
- sudo ln -s /usr/local/cuda-10.2/lib64/libcudart.so.10.2 /usr/local/cuda-10.1/lib64/libcudart.so.10
+ # For tensorflow 2 compatibility with cuda 10.2
+ sudo ln -s /usr/local/cuda-10.2/targets/x86_64-linux/lib/libcudart.so.10.2 /usr/lib/x86_64-linux-gnu/libcudart.so.10.1
 
-# Zip stuff and media player (VLC)
-sudo apt install -y unzip zip vlc
+# Zip stuff and media players (VLC and smplayer)
+sudo apt install -y unzip zip vlc smplayer
 
 # Install VOTT labeling tool
 wget https://github.com/microsoft/VoTT/releases/download/v2.2.0/vott-2.2.0-linux.snap
