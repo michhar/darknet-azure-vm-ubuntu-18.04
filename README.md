@@ -1,6 +1,36 @@
-# darknet-azure-vm-ubuntu-18.04
+# Darknet ML Framework Ubuntu 18.04 Azure VM
 
-## ARM Template to deploy a GPU enabled VM with Darknet Installed
+## Overview
+
+The intent of this project is to make it easier to deploy an NVIDIA GPU-backed virtual machine in Azure for creating YOLO models.  The VM options have the following AI associated programs installed (mainly) for YOLOv4 experimentation:
+- Darknet ML framework (GPU accelerated) for YOLO model training and inference (https://github.com/AlexeyAB/darknet)
+- YOLOv4 weights to TensorFlow and TensorFlow Lite converter (https://github.com/hunglc007/tensorflow-yolov4-tflite) (with TensorFlow-GPU installed)
+- Python 3
+- X2Go server (for remote desktop with X2Go clients)
+- VLC (media player)
+
+ML libraries are built for GPU-acceleration with:
+- CUDA 10.2
+- cuDNN 7
+- NVIDIA GPU(s) - type depending on the VM SKU chosen
+
+The deployment happens through a custom Azure Resource Manager (ARM) template.  Regions that this ARM template supports right now:
+- canadacentral
+- eastus
+- southcentralus
+- westeurope
+- westus2
+
+If you wish to perform your own, custom Darknet experiment, see the notes that utilize this VM here:  https://github.com/michhar/yolov4-darknet-notes.
+
+What gets deployed in Azure along with the VM:
+- Public IP address
+- Network interface
+- Network security group
+- Vitural network
+- Disk
+
+## ARM Template to deploy a GPU enabled VM with Darknet ML Framework Installed
 
 ARM template to deploy a GPU enabled VM with Darknet pre-installed (via install-darknet.sh)
 
@@ -122,6 +152,8 @@ There are test images in the `data` folder under the `darknet` repository to try
 ```
 scp <username>@<public IP or DNS name>:~/darknet/predictions.jpg .
 ```
+
+Note:  you could also use a remote desktop session as in with X2Go client for Windows or Mac to run the Darknet detector test and visualize the results.
 
 # Troubleshooting
 
