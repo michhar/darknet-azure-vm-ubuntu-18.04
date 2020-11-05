@@ -10,6 +10,8 @@ The intent of this project is to make it easier to deploy an NVIDIA GPU-backed v
 - X2Go server (for remote desktop with X2Go clients)
 - VLC (media player)
 
+If you wish to perform your own, custom Darknet experiment, see the notes that utilize this VM here:  https://github.com/michhar/yolov4-darknet-notes.
+
 ML libraries are built for GPU-acceleration with:
 - CUDA 10.2
 - cuDNN 7
@@ -21,8 +23,6 @@ The deployment happens through a custom Azure Resource Manager (ARM) template.  
 - southcentralus
 - westeurope
 - westus2
-
-If you wish to perform your own, custom Darknet experiment, see the notes that utilize this VM here:  https://github.com/michhar/yolov4-darknet-notes.
 
 What gets deployed in Azure along with the VM:
 - Public IP address
@@ -173,3 +173,9 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Credits
+
+- MSKeith's [iotedge-vm-deploy](https://github.com/MSKeith/iotedge-vm-deploy)
+- AlexeyAB's [Yolo v4, v3 and v2 for Windows and Linux](https://github.com/AlexeyAB/darknet)
+- hunglc007's [tensorflow-yolov4-tflite](https://github.com/hunglc007/tensorflow-yolov4-tflite)
