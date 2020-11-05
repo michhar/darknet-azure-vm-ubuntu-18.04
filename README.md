@@ -5,6 +5,7 @@
 The intent of this project is to make it easier to deploy an NVIDIA GPU-backed virtual machine in Azure for creating YOLO models.  The VM options have the following AI associated programs installed (mainly) for YOLOv4 experimentation:
 - Darknet ML framework (GPU accelerated) for YOLO model training and inference (https://github.com/AlexeyAB/darknet)
 - YOLOv4 weights to TensorFlow and TensorFlow Lite converter (https://github.com/hunglc007/tensorflow-yolov4-tflite) (with TensorFlow-GPU installed)
+- Visual Object Tagging Tool (VoTT - https://github.com/microsoft/VoTT)
 - Python 3
 - X2Go server (for remote desktop with X2Go clients)
 - VLC (media player)
@@ -56,9 +57,9 @@ az deployment group create \
   --parameters adminPasswordOrKey="YOUR_SECRET_PASSWORD"
 ```
 
-# Testing the installation
+## Testing the installation
 
-## Test the NVIDIA driver and docker
+### Test the NVIDIA driver and docker
 
 ```bash
 nvidia-smi
@@ -121,7 +122,7 @@ Status: Downloaded newer image for nvidia/cuda:11.0-base
 +-----------------------------------------------------------------------------+
 ```
 
-## Test Darknet
+### Test Darknet
 
 You should test darknet.  SSH into the VM.  On Windows, you can do so using a tool such as <a href="https://www.putty.org" target="_blank">PuTTY</a>.
 
@@ -155,11 +156,11 @@ scp <username>@<public IP or DNS name>:~/darknet/predictions.jpg .
 
 Note:  you could also use a remote desktop session as in with X2Go client for Windows or Mac to run the Darknet detector test and visualize the results.
 
-# Troubleshooting
+## Troubleshooting
 
 To investigate what occurred during deployment the install logs can be found in the /home/<adminUsername> directory. 
 
-# Contributing
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
