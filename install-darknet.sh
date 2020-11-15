@@ -79,9 +79,20 @@ sudo apt-add-repository -y ppa:x2go/stable
 sudo apt update
 sudo apt install -y x2goserver x2goserver-xsession x2golxdebindings x2gomatebindings xfce4
 
-echo "Installing OpenCV..." >> install-log.txt
+# Install nvidia docker
+echo "Installing nvidia docker..." >> install-log.txt
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt install -y docker-ce
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add
+curl -s -L https://nvidia.github.io/nvidia-docker/ubuntu18.04/nvidia-docker.list -o nvidia-docker.list
+cp nvidia-docker.list /etc/apt/sources.list.d/nvidia-docker.list
+apt update
+apt install -y nvidia-docker2 2>> install-log.txt
+pkill -SIGHUP dockerd
 
 # Install OpenCV
+echo "Installing OpenCV..." >> install-log.txt
 sudo apt update && sudo apt install -y libopencv-dev python3-opencv 2>> install-log.txt
 
 # Clone darknet
